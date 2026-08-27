@@ -76,13 +76,13 @@ html_code = """
         <!-- 좌측 패널: 설정 및 업로드 -->
         <aside class="w-full lg:w-96 bg-gray-900 border-b lg:border-b-0 lg:border-r border-gray-800 p-4 flex flex-col gap-4 overflow-y-auto shrink-0 h-full">
             
-            <!-- API 설정 (기본값 제거하여 보안 경고 방지) -->
-            <div class="flex flex-col gap-1.5">
+            <!-- API 설정 (자동완성 및 로컬저장 적용) -->
+            <div class="flex flex-col gap-1.5" autocomplete="on">
                 <div class="flex justify-between items-center">
-                    <label class="text-xs font-semibold text-gray-400 uppercase">API</label>
+                    <label class="text-xs font-semibold text-gray-400 uppercase">API Key</label>
                     <span class="text-[10px] text-purple-400 cursor-pointer hover:underline" onclick="toggleApiKey()">잠금/해제</span>
                 </div>
-                <input type="password" id="apiKey" value="" placeholder="Gemini API Key를 입력하세요..." class="bg-gray-950 border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500">
+                <input type="password" id="apiKey" name="gemini_api_key" autocomplete="current-password" placeholder="Gemini API Key를 입력하세요..." oninput="saveApiKey(this.value)" class="bg-gray-950 border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500">
             </div>
 
             <!-- 모델 및 지침 -->
@@ -290,6 +290,17 @@ html_code = """
             input.type = input.type === 'password' ? 'text' : 'password';
         }
 
+        function saveApiKey(val) {
+            localStorage.setItem('gemini_api_key', val);
+        }
+
+        function loadApiKey() {
+            const savedKey = localStorage.getItem('gemini_api_key');
+            if (savedKey) {
+                document.getElementById('apiKey').value = savedKey;
+            }
+        }
+
         function switchLang(lang) {
             currentLang = lang;
             document.getElementById('langKo').className = lang === 'ko' ? 'px-2.5 py-1 rounded text-xs font-semibold bg-purple-600 text-white transition' : 'px-2.5 py-1 rounded text-xs font-semibold text-gray-400 hover:text-white transition';
@@ -488,6 +499,7 @@ html_code = """
         }
 
         window.onload = () => {
+            loadApiKey();
             switchLang('ko');
         };
     </script>
