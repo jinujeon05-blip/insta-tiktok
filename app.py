@@ -1,9 +1,8 @@
 import streamlit as st
 
-# Streamlit 페이지 설정 (전체 화면 활용)
+# Streamlit 페이지 설정 (전체 화면 활용 및 여백 제거)
 st.set_page_config(page_title="JS welink - Insta Card News Maker", layout="wide")
 
-# Streamlit 기본 여백 및 헤더/푸터 숨기기 CSS 적용
 st.markdown("""
     <style>
         .block-container {
@@ -23,7 +22,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# HTML/JS 앱 코드
+# HTML/JS 앱 코드 (자동완성 기능 개선 완료)
 html_code = """
 <!DOCTYPE html>
 <html lang="vi">
@@ -73,13 +72,13 @@ html_code = """
         <!-- 좌측 패널: 설정 및 업로드 -->
         <aside class="w-full lg:w-96 bg-gray-900 border-b lg:border-b-0 lg:border-r border-gray-800 p-4 sm:p-6 flex flex-col gap-5 shrink-0">
             
-            <!-- API 설정 -->
+            <!-- API 설정 (자동완성 지원) -->
             <div class="flex flex-col gap-1.5">
                 <div class="flex justify-between items-center">
                     <label class="text-xs font-semibold text-gray-400 uppercase">API</label>
-                    <span class="text-[10px] text-purple-400 cursor-pointer hover:underline" onclick="toggleApiKey()">잠금/해제</span>
+                    <span class="text-[10px] text-purple-400 cursor-pointer hover:underline" onclick="toggleApiKey()">숨김/보기</span>
                 </div>
-                <input type="password" id="apiKey" value="" placeholder="API Key를 입력하세요" class="bg-gray-950 border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500">
+                <input type="text" id="apiKey" name="gemini_api_key" autocomplete="on" value="" placeholder="API Key를 입력하세요" class="bg-gray-950 border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500">
             </div>
 
             <!-- 모델 및 지침 -->
@@ -275,7 +274,7 @@ html_code = """
 
         function toggleApiKey() {
             const input = document.getElementById('apiKey');
-            input.type = input.type === 'password' ? 'text' : 'password';
+            input.type = input.type === 'text' ? 'password' : 'text';
         }
 
         function switchLang(lang) {
