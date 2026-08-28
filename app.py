@@ -1,9 +1,29 @@
 import streamlit as st
 
-# Streamlit 페이지 설정
+# Streamlit 페이지 설정 (전체 화면 활용)
 st.set_page_config(page_title="JS welink - Insta Card News Maker", layout="wide")
 
-# HTML/JS 앱을 Streamlit에 임베디드하기 위한 컴포넌트
+# Streamlit 기본 여백 및 헤더/푸터 숨기기 CSS 적용
+st.markdown("""
+    <style>
+        .block-container {
+            padding-top: 0rem !important;
+            padding-bottom: 0rem !important;
+            padding-left: 0rem !important;
+            padding-right: 0rem !important;
+            max-width: 100% !important;
+        }
+        header {visibility: hidden;}
+        footer {visibility: hidden;}
+        iframe {
+            width: 100vw !important;
+            height: 100vh !important;
+            border: none !important;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+# HTML/JS 앱 코드
 html_code = """
 <!DOCTYPE html>
 <html lang="vi">
@@ -16,7 +36,7 @@ html_code = """
     <!-- html2canvas for card image download -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
-<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col overflow-x-hidden">
+<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col overflow-x-hidden m-0 p-0">
 
     <!-- 상단 헤더 -->
     <header class="bg-gray-900 border-b border-gray-800 px-4 sm:px-6 py-3 flex flex-wrap justify-between items-center gap-3 shrink-0">
@@ -463,4 +483,4 @@ html_code = """
 </html>
 """
 
-st.components.v1.html(html_code, height=900, scrolling=True)
+st.components.v1.html(html_code, height=950, scrolling=True)
