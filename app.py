@@ -30,13 +30,13 @@
     <!-- 플랫폼 탭 네비게이션 바 -->
     <nav class="bg-gray-900/90 border-b border-gray-800 px-4 py-2.5 flex gap-2 overflow-x-auto no-scrollbar shrink-0">
         <button onclick="switchPlatform('instagram')" id="tabInstagram" class="whitespace-nowrap px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-purple-600 text-white transition flex items-center gap-2 shadow-lg shadow-purple-900/35">
-            📸 Instagram
+            Instagram
         </button>
         <button onclick="switchPlatform('tiktok')" id="tabTiktok" class="whitespace-nowrap px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-gray-800 text-gray-400 hover:text-white transition flex items-center gap-2">
-            🎵 TikTok
+            TikTok
         </button>
         <button onclick="switchPlatform('facebook')" id="tabFacebook" class="whitespace-nowrap px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-gray-800 text-gray-400 hover:text-white transition flex items-center gap-2">
-            📘 Facebook
+            Facebook
         </button>
     </nav>
 
