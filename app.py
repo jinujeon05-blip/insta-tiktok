@@ -1,55 +1,25 @@
-import streamlit as st
-import streamlit.components.v1 as components
-
-# 스트림릿 페이지 와이드 설정 및 기본 여백 최소화
-st.set_page_config(
-    page_title="JS welink - Insta Card News Maker",
-    page_icon="📸",
-    layout="wide",
-    initial_sidebar_state="collapsed"
-)
-
-st.markdown("""
-    <style>
-        .block-container {
-            padding-top: 0rem !important;
-            padding-bottom: 0rem !important;
-            padding-left: 0rem !important;
-            padding-right: 0rem !important;
-            max-width: 100% !important;
-        }
-        header {visibility: hidden;}
-    </style>
-""", unsafe_allow_html=True)
-
-html_code = """
 <!DOCTYPE html>
-<html lang="vi" class="h-full">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>JS welink - Insta Card News Maker</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- html2canvas for card image download -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <style>
-        html, body {
-            height: 100vh;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-        }
-    </style>
 </head>
-<body class="bg-gray-950 text-gray-100 h-screen flex flex-col overflow-hidden">
+<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col overflow-x-hidden">
 
     <!-- 상단 헤더 -->
-    <header class="bg-gray-900 border-b border-gray-800 px-4 sm:px-6 py-2.5 flex flex-wrap justify-between items-center gap-3 shrink-0">
+    <header class="bg-gray-900 border-b border-gray-800 px-4 sm:px-6 py-3 flex flex-wrap justify-between items-center gap-3 shrink-0">
         <h1 class="text-sm sm:text-lg font-bold flex items-center gap-2">
             <span class="w-3 h-3 bg-purple-500 rounded-full inline-block"></span>
             Insta Card News Maker
         </h1>
         <div class="flex items-center gap-2 sm:gap-3">
             <span id="activePlatformBadge" class="text-xs text-purple-300 bg-purple-950/60 border border-purple-800/50 px-2.5 py-1 rounded-full font-medium">Instagram</span>
+            <!-- 언어 선택 버튼 (KO/VI) -->
             <div class="flex bg-gray-800 rounded-lg p-0.5 border border-gray-700">
                 <button onclick="switchLang('ko')" id="langKo" class="px-2.5 py-1 rounded text-xs font-semibold bg-purple-600 text-white transition">KO</button>
                 <button onclick="switchLang('vi')" id="langVi" class="px-2.5 py-1 rounded text-xs font-semibold text-gray-400 hover:text-white transition">VI</button>
@@ -58,35 +28,35 @@ html_code = """
     </header>
 
     <!-- 플랫폼 탭 네비게이션 바 -->
-    <nav class="bg-gray-900/90 border-b border-gray-800 px-4 py-2 flex gap-2 overflow-x-auto no-scrollbar shrink-0">
-        <button onclick="switchPlatform('instagram')" id="tabInstagram" class="whitespace-nowrap px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold bg-purple-600 text-white transition flex items-center gap-2 shadow-lg shadow-purple-900/35">
+    <nav class="bg-gray-900/90 border-b border-gray-800 px-4 py-2.5 flex gap-2 overflow-x-auto no-scrollbar shrink-0">
+        <button onclick="switchPlatform('instagram')" id="tabInstagram" class="whitespace-nowrap px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-purple-600 text-white transition flex items-center gap-2 shadow-lg shadow-purple-900/35">
             📸 Instagram
         </button>
-        <button onclick="switchPlatform('tiktok')" id="tabTiktok" class="whitespace-nowrap px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold bg-gray-800 text-gray-400 hover:text-white transition flex items-center gap-2">
+        <button onclick="switchPlatform('tiktok')" id="tabTiktok" class="whitespace-nowrap px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-gray-800 text-gray-400 hover:text-white transition flex items-center gap-2">
             🎵 TikTok
         </button>
-        <button onclick="switchPlatform('facebook')" id="tabFacebook" class="whitespace-nowrap px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold bg-gray-800 text-gray-400 hover:text-white transition flex items-center gap-2">
+        <button onclick="switchPlatform('facebook')" id="tabFacebook" class="whitespace-nowrap px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-gray-800 text-gray-400 hover:text-white transition flex items-center gap-2">
             📘 Facebook
         </button>
     </nav>
 
-    <!-- 메인 레이아웃 -->
-    <main class="flex-1 flex flex-col lg:flex-row overflow-hidden">
+    <!-- 메인 레이아웃 (모바일 전체 스크롤 보장) -->
+    <main class="flex-1 flex flex-col lg:flex-row w-full overflow-y-auto">
         
         <!-- 좌측 패널: 설정 및 업로드 -->
-        <aside class="w-full lg:w-96 bg-gray-900 border-b lg:border-b-0 lg:border-r border-gray-800 p-4 flex flex-col gap-4 overflow-y-auto shrink-0 h-full">
+        <aside class="w-full lg:w-96 bg-gray-900 border-b lg:border-b-0 lg:border-r border-gray-800 p-4 sm:p-6 flex flex-col gap-5 shrink-0">
             
-            <!-- API 설정 (자동완성 및 로컬저장 적용) -->
-            <div class="flex flex-col gap-1.5" autocomplete="on">
+            <!-- API 설정 -->
+            <div class="flex flex-col gap-1.5">
                 <div class="flex justify-between items-center">
-                    <label class="text-xs font-semibold text-gray-400 uppercase">API Key</label>
+                    <label class="text-xs font-semibold text-gray-400 uppercase">API</label>
                     <span class="text-[10px] text-purple-400 cursor-pointer hover:underline" onclick="toggleApiKey()">잠금/해제</span>
                 </div>
-                <input type="password" id="apiKey" name="gemini_api_key" autocomplete="current-password" placeholder="Gemini API Key를 입력하세요..." oninput="saveApiKey(this.value)" class="bg-gray-950 border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500">
+                <input type="password" id="apiKey" value="" placeholder="AIzaSy..." class="bg-gray-950 border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500">
             </div>
 
             <!-- 모델 및 지침 -->
-            <div class="flex flex-col gap-3">
+            <div class="flex flex-col gap-4">
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs font-semibold text-gray-400 uppercase">모델</label>
                     <select id="aiModel" class="bg-gray-950 border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500">
@@ -98,35 +68,36 @@ html_code = """
 
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs font-semibold text-gray-400 uppercase">지침 (분석 & 번역 공통, 선택)</label>
-                    <textarea id="aiPrompt" rows="2" class="bg-gray-950 border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500">20대들의 언어로 자세하게 이해하기 쉽게해줘</textarea>
+                    <textarea id="aiPrompt" rows="3" class="bg-gray-950 border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500">20대들의 언어로 자세하게 이해하기 쉽게해줘</textarea>
                 </div>
             </div>
 
             <hr class="border-gray-800">
 
             <!-- 인스타그램 원본 업로드 섹션 -->
-            <div class="flex flex-col gap-2.5">
+            <div class="flex flex-col gap-3">
                 <label class="text-xs font-semibold text-gray-400 uppercase">인스타그램 원본</label>
                 
-                <div class="grid grid-cols-2 gap-2">
-                    <div class="flex flex-col gap-1">
-                        <span class="text-[11px] text-gray-400">게시물 이미지</span>
-                        <label for="postImageInput" id="postDropZone" class="border border-dashed border-gray-700 bg-gray-950 hover:bg-gray-900 rounded-lg p-2 text-center cursor-pointer transition flex flex-col items-center justify-center gap-1 overflow-hidden relative" style="min-height: 55px;">
-                            <span id="postImageLabel" class="text-[11px] text-gray-400">이미지 업로드</span>
-                            <input type="file" id="postImageInput" accept="image/*" class="hidden" onchange="previewImage(this, 'post')">
-                        </label>
-                    </div>
-
-                    <div class="flex flex-col gap-1">
-                        <span class="text-[11px] text-gray-400">본문 캡처</span>
-                        <label for="bodyImageInput" id="bodyDropZone" class="border border-dashed border-gray-700 bg-gray-950 hover:bg-gray-900 rounded-lg p-2 text-center cursor-pointer transition flex flex-col items-center justify-center gap-1 overflow-hidden relative" style="min-height: 55px;">
-                            <span id="bodyImageLabel" class="text-[11px] text-gray-400">스크린샷 업로드</span>
-                            <input type="file" id="bodyImageInput" accept="image/*" class="hidden" onchange="previewImage(this, 'body')">
-                        </label>
-                    </div>
+                <!-- 게시물 이미지 업로드 -->
+                <div class="flex flex-col gap-1">
+                    <span class="text-[11px] text-gray-400">게시물 이미지</span>
+                    <label for="postImageInput" id="postDropZone" class="border border-dashed border-gray-700 bg-gray-950 hover:bg-gray-900 rounded-lg p-3 text-center cursor-pointer transition flex flex-col items-center justify-center gap-1 overflow-hidden relative" style="min-height: 70px;">
+                        <span id="postImageLabel" class="text-xs text-gray-400">이미지 업로드</span>
+                        <input type="file" id="postImageInput" accept="image/*" class="hidden" onchange="previewImage(this, 'post')">
+                    </label>
                 </div>
 
-                <button onclick="generateContent()" class="mt-1 bg-purple-600 hover:bg-purple-500 text-white font-medium py-2 px-4 rounded-lg text-sm transition flex items-center justify-center gap-2 shadow-md">
+                <!-- 본문 캡처 업로드 -->
+                <div class="flex flex-col gap-1">
+                    <span class="text-[11px] text-gray-400">본문 캡처</span>
+                    <label for="bodyImageInput" id="bodyDropZone" class="border border-dashed border-gray-700 bg-gray-950 hover:bg-gray-900 rounded-lg p-3 text-center cursor-pointer transition flex flex-col items-center justify-center gap-1 overflow-hidden relative" style="min-height: 70px;">
+                        <span id="bodyImageLabel" class="text-xs text-gray-400">본문 스크린샷 업로드</span>
+                        <input type="file" id="bodyImageInput" accept="image/*" class="hidden" onchange="previewImage(this, 'body')">
+                    </label>
+                </div>
+
+                <!-- 분석하고 카드 생성 버튼 -->
+                <button onclick="generateContent()" class="mt-2 bg-purple-600 hover:bg-purple-500 text-white font-medium py-2.5 px-4 rounded-lg text-sm transition flex items-center justify-center gap-2 shadow-md">
                     분석하고 카드 생성
                 </button>
             </div>
@@ -134,10 +105,10 @@ html_code = """
             <hr class="border-gray-800">
 
             <!-- 번역 & 다운로드 섹션 -->
-            <div class="flex flex-col gap-2.5">
+            <div class="flex flex-col gap-3">
                 <label class="text-xs font-semibold text-gray-400 uppercase">번역 & 다운로드</label>
                 
-                <div class="flex flex-col gap-1">
+                <div class="flex flex-col gap-1.5">
                     <span class="text-[11px] text-gray-400">언어</span>
                     <select id="translateLangSelect" class="bg-gray-950 border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500">
                         <option value="ko">한국어</option>
@@ -148,10 +119,10 @@ html_code = """
                 </div>
 
                 <div class="grid grid-cols-2 gap-2 mt-1">
-                    <button onclick="executeTranslation()" class="bg-gray-800 hover:bg-gray-700 text-gray-200 font-medium py-2 px-4 rounded-lg text-sm transition border border-gray-700">
+                    <button onclick="executeTranslation()" class="bg-gray-800 hover:bg-gray-700 text-gray-200 font-medium py-2.5 px-4 rounded-lg text-sm transition border border-gray-700">
                         번역
                     </button>
-                    <button onclick="downloadCard()" class="bg-purple-600 hover:bg-purple-500 text-white font-medium py-2 px-4 rounded-lg text-sm transition shadow-md">
+                    <button onclick="downloadCard()" class="bg-purple-600 hover:bg-purple-500 text-white font-medium py-2.5 px-4 rounded-lg text-sm transition shadow-md">
                         다운로드
                     </button>
                 </div>
@@ -160,24 +131,30 @@ html_code = """
         </aside>
 
         <!-- 중앙: 미리보기 영역 -->
-        <section class="flex-1 bg-gray-950 p-4 flex flex-col items-center justify-center gap-3 overflow-y-auto h-full">
+        <section class="flex-1 bg-gray-950 p-4 sm:p-6 flex flex-col items-center justify-center gap-5 shrink-0 min-h-[450px]">
             
-            <div id="subOptionBar" class="flex flex-wrap justify-center gap-2 bg-gray-900 p-1.5 rounded-lg border border-gray-800 shrink-0">
+            <!-- 포맷/서브 옵션 전환 바 -->
+            <div id="subOptionBar" class="flex flex-wrap justify-center gap-2 bg-gray-900 p-1.5 rounded-lg border border-gray-800">
+                <!-- 동적 생성 -->
             </div>
 
+            <!-- 카드 미리보기 캔버스 컨테이너 -->
             <div class="relative flex items-center justify-center overflow-hidden border border-gray-800 rounded-xl shadow-2xl bg-black transition-all duration-300 max-w-full" style="width: 320px; height: 400px;" id="previewContainer">
-                <div id="cardPreview" class="w-full h-full bg-gradient-to-br from-gray-900 via-gray-900 to-purple-950 p-6 flex flex-col justify-between relative transition-all duration-300">
+                <div id="cardPreview" class="w-full h-full bg-gradient-to-br from-gray-900 via-gray-900 to-purple-950 p-6 sm:p-8 flex flex-col justify-between relative transition-all duration-300">
                     
+                    <!-- 상단 브랜드/로고 영역 -->
                     <div class="flex justify-between items-center text-xs text-purple-300 font-medium">
                         <span id="previewBrand">JS welink</span>
                         <span id="cardPlatformIndicator">Instagram</span>
                     </div>
 
+                    <!-- 중앙 텍스트 영역 -->
                     <div class="my-auto flex flex-col gap-2.5 text-center">
                         <h2 id="cardTitle" class="text-lg sm:text-xl font-bold text-white leading-snug">플랫폼 맞춤 제목</h2>
                         <p id="cardBody" class="text-xs sm:text-sm text-gray-300 leading-relaxed">이미지를 업로드하거나 텍스트를 입력해 생성해보세요.</p>
                     </div>
 
+                    <!-- 하단 푸터 -->
                     <div class="flex justify-between items-center text-[10px] sm:text-xs text-gray-500">
                         <span id="cardFooterTag">#JSwelink #Hanoi</span>
                         <span>Swipe ➔</span>
@@ -188,26 +165,26 @@ html_code = """
         </section>
 
         <!-- 우측 속성 설정 패널 -->
-        <aside class="w-full lg:w-80 bg-gray-900 border-t lg:border-t-0 lg:border-l border-gray-800 p-4 flex flex-col gap-4 overflow-y-auto shrink-0 h-full">
+        <aside class="w-full lg:w-80 bg-gray-900 border-t lg:border-t-0 lg:border-l border-gray-800 p-4 sm:p-6 flex flex-col gap-5 shrink-0 pb-12">
             <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">디자인 및 텍스트 직접 수정</h3>
             
-            <div class="flex flex-col gap-3">
-                <div class="flex flex-col gap-1">
+            <div class="flex flex-col gap-3.5">
+                <div class="flex flex-col gap-1.5">
                     <label class="text-xs text-gray-400">브랜드 / 채널명</label>
                     <input type="text" id="inputBrand" value="JS welink" oninput="updateBrand(this.value)" class="bg-gray-950 border border-gray-800 rounded px-3 py-2 text-sm text-gray-200">
                 </div>
 
-                <div class="flex flex-col gap-1">
+                <div class="flex flex-col gap-1.5">
                     <label class="text-xs text-gray-400">제목 수정</label>
                     <input type="text" id="inputTitle" placeholder="" oninput="updateTitle(this.value)" class="bg-gray-950 border border-gray-800 rounded px-3 py-2 text-sm text-gray-200">
                 </div>
 
-                <div class="flex flex-col gap-1">
+                <div class="flex flex-col gap-1.5">
                     <label class="text-xs text-gray-400">본문 내용 수정</label>
-                    <textarea id="inputBodyText" rows="4" placeholder="" oninput="updateBodyText(this.value)" class="bg-gray-950 border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 mt-1"></textarea>
+                    <textarea id="inputBodyText" rows="5" placeholder="" oninput="updateBodyText(this.value)" class="bg-gray-950 border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 mt-1"></textarea>
                 </div>
 
-                <div class="flex flex-col gap-1">
+                <div class="flex flex-col gap-1.5">
                     <label class="text-xs text-gray-400">하단 해시태그 / 푸터</label>
                     <input type="text" id="inputFooter" value="#JSwelink #Hanoi" oninput="updateFooter(this.value)" class="bg-gray-950 border border-gray-800 rounded px-3 py-2 text-sm text-gray-200">
                 </div>
@@ -216,6 +193,7 @@ html_code = """
 
     </main>
 
+    <!-- 자바스크립트 로직 -->
     <script>
         let currentLang = 'ko';
         let currentPlatform = 'instagram';
@@ -290,17 +268,6 @@ html_code = """
             input.type = input.type === 'password' ? 'text' : 'password';
         }
 
-        function saveApiKey(val) {
-            localStorage.setItem('gemini_api_key', val);
-        }
-
-        function loadApiKey() {
-            const savedKey = localStorage.getItem('gemini_api_key');
-            if (savedKey) {
-                document.getElementById('apiKey').value = savedKey;
-            }
-        }
-
         function switchLang(lang) {
             currentLang = lang;
             document.getElementById('langKo').className = lang === 'ko' ? 'px-2.5 py-1 rounded text-xs font-semibold bg-purple-600 text-white transition' : 'px-2.5 py-1 rounded text-xs font-semibold text-gray-400 hover:text-white transition';
@@ -321,16 +288,16 @@ html_code = """
             ['instagram', 'tiktok', 'facebook'].forEach(p => {
                 const btn = document.getElementById('tab' + p.charAt(0).toUpperCase() + p.slice(1));
                 if (p === platform) {
-                    btn.className = 'whitespace-nowrap px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold bg-purple-600 text-white transition flex items-center gap-2 shadow-lg shadow-purple-900/35';
+                    btn.className = 'whitespace-nowrap px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-purple-600 text-white transition flex items-center gap-2 shadow-lg shadow-purple-900/35';
                 } else {
-                    btn.className = 'whitespace-nowrap px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold bg-gray-800 text-gray-400 hover:text-white transition flex items-center gap-2';
+                    btn.className = 'whitespace-nowrap px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-gray-800 text-gray-400 hover:text-white transition flex items-center gap-2';
                 }
             });
 
             document.getElementById('activePlatformBadge').innerText = theme.indicator;
             document.getElementById('aiPrompt').value = dict.prompts[platform];
             document.getElementById('cardPlatformIndicator').innerText = theme.indicator;
-            document.getElementById('cardPreview').className = `w-full h-full bg-gradient-to-br ${theme.class} p-6 flex flex-col justify-between relative transition-all duration-300`;
+            document.getElementById('cardPreview').className = `w-full h-full bg-gradient-to-br ${theme.class} p-6 sm:p-8 flex flex-col justify-between relative transition-all duration-300`;
 
             renderSubOptions(dict.subOpts[platform]);
         }
@@ -341,7 +308,7 @@ html_code = """
             options.forEach((opt, idx) => {
                 const btn = document.createElement('button');
                 btn.id = 'subBtn_' + opt.id;
-                btn.className = idx === 0 ? 'px-3 py-1 rounded text-xs font-medium bg-purple-600 text-white transition whitespace-nowrap' : 'px-3 py-1 rounded text-xs font-medium text-gray-400 hover:text-white transition whitespace-nowrap';
+                btn.className = idx === 0 ? 'px-3 py-1.5 rounded text-xs font-medium bg-purple-600 text-white transition whitespace-nowrap' : 'px-3 py-1.5 rounded text-xs font-medium text-gray-400 hover:text-white transition whitespace-nowrap';
                 btn.innerText = opt.label;
                 btn.onclick = () => setFormat(opt.id, opt.width, opt.height, options);
                 bar.appendChild(btn);
@@ -363,7 +330,7 @@ html_code = """
             currentOptions.forEach(opt => {
                 const btn = document.getElementById('subBtn_' + opt.id);
                 if (btn) {
-                    btn.className = opt.id === formatId ? 'px-3 py-1 rounded text-xs font-medium bg-purple-600 text-white transition whitespace-nowrap' : 'px-3 py-1 rounded text-xs font-medium text-gray-400 hover:text-white transition whitespace-nowrap';
+                    btn.className = opt.id === formatId ? 'px-3 py-1.5 rounded text-xs font-medium bg-purple-600 text-white transition whitespace-nowrap' : 'px-3 py-1.5 rounded text-xs font-medium text-gray-400 hover:text-white transition whitespace-nowrap';
                 }
             });
         }
@@ -431,7 +398,7 @@ html_code = """
             alert(dict.alertGenerating);
 
             try {
-                let parts = [{ text: `${prompt}\\n\\nReturn JSON format strictly containing keys "title" and "body".` }];
+                let parts = [{ text: `${prompt}\n\nReturn JSON format strictly containing keys "title" and "body".` }];
                 
                 if (uploadedPostImageBase64) {
                     parts.push({ inlineData: { mimeType: "image/jpeg", data: uploadedPostImageBase64 } });
@@ -471,7 +438,7 @@ html_code = """
             alert(`${langNames[targetLang]} (으)로 ${dict.alertTranslating}`);
 
             try {
-                const prompt = `Translate the following title and body into natural, professional ${langNames[targetLang]}. Keep social media style.\\n\\nTitle: ${currentTitle}\\nBody: ${currentBody}\\n\\nReturn JSON format strictly containing keys "title" and "body".`;
+                const prompt = `Translate the following title and body into natural, professional ${langNames[targetLang]}. Keep social media style.\n\nTitle: ${currentTitle}\nBody: ${currentBody}\n\nReturn JSON format strictly containing keys "title" and "body".`;
                 const result = await callGeminiAPIWithRetry(apiKey, model, [{ text: prompt }]);
 
                 if (result.title) {
@@ -499,12 +466,8 @@ html_code = """
         }
 
         window.onload = () => {
-            loadApiKey();
             switchLang('ko');
         };
     </script>
 </body>
 </html>
-"""
-
-components.html(html_code, height=880, scrolling=False)
