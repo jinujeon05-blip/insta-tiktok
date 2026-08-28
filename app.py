@@ -46,13 +46,13 @@
         <!-- 좌측 패널: 설정 및 업로드 -->
         <aside class="w-full lg:w-96 bg-gray-900 border-b lg:border-b-0 lg:border-r border-gray-800 p-4 sm:p-6 flex flex-col gap-5 shrink-0">
             
-            <!-- API 설정 -->
+            <!-- API 설정 (보안을 위해 value는 비워둠) -->
             <div class="flex flex-col gap-1.5">
                 <div class="flex justify-between items-center">
                     <label class="text-xs font-semibold text-gray-400 uppercase">API</label>
                     <span class="text-[10px] text-purple-400 cursor-pointer hover:underline" onclick="toggleApiKey()">잠금/해제</span>
                 </div>
-                <input type="password" id="apiKey" value="" placeholder="AIzaSy..." class="bg-gray-950 border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500">
+                <input type="password" id="apiKey" value="" placeholder="API Key를 입력하세요" class="bg-gray-950 border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500">
             </div>
 
             <!-- 모델 및 지침 -->
